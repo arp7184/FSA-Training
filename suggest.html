@@ -8,7 +8,7 @@
   </head>
   <body>
     <header class="site-header">
-      <h1>Website Header</h1>
+      <h1>Alison's Recipe Share</h1>
       <nav class="site-nav">
         <a id="homeButton" class="nav-link" href="index.html">Home</a>
         <a id="recipeListLink" class="nav-link" href="recipe-list.html">Recipes</a>
@@ -18,12 +18,122 @@
 
     <main class="page">
       <h2 style="margin: 0 0 14px 0;">Suggest</h2>
-      <div class="picture-placeholder" aria-label="Suggestion placeholder">
-        Suggestion Placeholder
+      <div class="form-container" aria-label="Suggestion form">
+        <form id="suggestionForm" onsubmit="handleSuggestionSubmit(event)">
+          <label for="username">Name:</label>
+          <input type="text" id="username" name="username" required>
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+          <label for="recipeName">Recipe Name:</label>
+          <input type="text" id="recipeName" name="recipeName" autocomplete="off" required>
+          <label for="recipeIngredients">Recipe Ingredients:</label>
+          <textarea id="recipeIngredients" name="recipeIngredients" required></textarea>
+          <label for="recipeDescription">Recipe Description:</label>
+          <textarea id="recipeDescription" name="recipeDescription" required></textarea>
+
+          <div class="terms-row">
+            <input type="checkbox" id="terms" name="terms" required>
+            <label for="terms">I agree to the Terms and Conditions</label>
+          </div>
+
+        </form>
+        <div id="submitHint" class="disabled-hint">
+          Submission disabled until Terms &amp; Conditions is checked.
+        </div>
+        <button id="submitButton" class="form-button" type="submit" form="suggestionForm" disabled>
+          Submit
+        </button>
       </div>
     </main>
 
-    <script type="module" src="./suggest.js"></script>
+    <script>
+      var syncTermsUi = function () {};
+      var SUBMIT_FLAG_KEY = 'suggestFormJustSubmitted';
+
+      function handleSuggestionSubmit(event) {
+        event.preventDefault();
+
+        var form = document.getElementById('suggestionForm');
+        var name = (document.getElementById('username') || {}).value || '';
+        var recipeName = (document.getElementById('recipeName') || {}).value || '';
+        var recipeDescription = (document.getElementById('recipeDescription') || {}).value || '';
+        var recipeIngredients = (document.getElementById('recipeIngredients') || {}).value || '';
+
+        var to = 'alison.park@accenture.com';
+        var subject = 'New Recipe Suggestion: ' + (recipeName || '(no recipe name)');
+        var body =
+          'Name: ' +
+          name +
+          '\n' +
+          'Recipe Name: ' +
+          recipeName +
+          '\n' +
+          'Recipe Description:\n' +
+          recipeDescription +
+          '\n\n' ;
+
+        // Note: mailto cannot attach the actual file; it can only prefill text.
+        var mailtoUrl =
+          'mailto:' +
+          encodeURIComponent(to) +
+          '?subject=' +
+          encodeURIComponent(subject) +
+          '&body=' +
+          encodeURIComponent(body);
+
+        // Mark submission so when user returns from Outlook, we clear fields.
+        try {
+          sessionStorage.setItem(SUBMIT_FLAG_KEY, '1');
+        } catch (e) {}
+
+        // Clear immediately (so it works even if page is cached on return).
+        if (form) form.reset();
+        syncTermsUi();
+
+        // Use location.href so Outlook opens without popup-blocker.
+        window.setTimeout(function () {
+          window.location.href = mailtoUrl;
+        }, 25);
+      }
+
+      (function () {
+        var form = document.getElementById('suggestionForm');
+        var terms = document.getElementById('terms');
+        var submitButton = document.getElementById('submitButton');
+        var submitHint = document.getElementById('submitHint');
+
+        if (!terms || !submitButton) return;
+
+        syncTermsUi = function () {
+          var enabled = terms.checked;
+          submitButton.disabled = !enabled;
+          if (submitHint) {
+            submitHint.style.display = enabled ? 'none' : 'block';
+          }
+        };
+
+        syncTermsUi();
+        terms.addEventListener('change', syncTermsUi);
+
+        function clearIfJustSubmitted() {
+          try {
+            if (sessionStorage.getItem(SUBMIT_FLAG_KEY) === '1') {
+              sessionStorage.removeItem(SUBMIT_FLAG_KEY);
+              if (form) form.reset();
+              syncTermsUi();
+            }
+          } catch (e) {}
+        }
+
+        // Runs on normal load.
+        clearIfJustSubmitted();
+
+        // Runs when returning via Back/Forward cache.
+        window.addEventListener('pageshow', function () {
+          clearIfJustSubmitted();
+        });
+      })();
+    </script>
   </body>
 </html>
 

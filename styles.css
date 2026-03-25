@@ -110,3 +110,66 @@
   background: #f0f0f0;
 }
 
+.form-container {
+  border: 2px solid #111;
+  padding: 14px;
+  background: #fff;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.form-container label {
+  display: block;
+  margin: 10px 0 10px 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.form-container input,
+.form-container textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 2px solid #111;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.form-button {
+  background: #111;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.disabled-hint {
+  margin: 8px 0 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+}
+
+.terms-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 0 10px 0;
+}
+
+.terms-row input[type='checkbox'] {
+  width: auto;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+}
+
+.terms-row label {
+  display: inline;
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+}
