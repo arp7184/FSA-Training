@@ -5,7 +5,20 @@ function wireRecipeCards() {
   cards.forEach((card) => {
     card.addEventListener('click', function () {
       const title = card.dataset.title || '';
-      window.location.href = `recipe-detail.html?title=${encodeURIComponent(title)}`;
+      const description = card.dataset.description || '';
+      const ingredients = card.dataset.ingredients || '';
+      const instructions = card.dataset.instructions || '';
+      const image = card.dataset.image || '';
+
+      const params = new URLSearchParams({
+        title,
+        description,
+        ingredients,
+        instructions,
+        image,
+      });
+
+      window.location.href = `recipe-detail.html?${params.toString()}`;
     });
   });
 }
